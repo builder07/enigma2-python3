@@ -9,7 +9,7 @@ class eDVBCICcSessionImpl;
 class eDVBCICcSession: public eDVBCISession
 {
 	eDVBCISlot *slot;
-	std::auto_ptr<eDVBCICcSessionImpl> pimpl;
+	std::shared_ptr<eDVBCICcSessionImpl> pimpl;
 
 	int receivedAPDU(const unsigned char *tag, const void *data, int len);
 	int doAction();
