@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from __future__ import division
 from Screens.Screen import Screen
 from Components.ActionMap import NumberActionMap
 from Components.SystemInfo import SystemInfo
@@ -10,8 +11,8 @@ from Components.config import config
 MAX_X = 720
 MAX_Y = 576
 MAX_W, MAX_H = SystemInfo["MaxPIPSize"]
-MIN_W = MAX_X / 8
-MIN_H = MAX_Y / 8
+MIN_W = MAX_X // 8
+MIN_H = MAX_Y // 8
 
 def clip(val, min, max):
 	if min <= val <= max:
@@ -85,15 +86,15 @@ class PiPSetup(Screen):
 
 		oldsize = self.size
 		if self.mode != "split":
-			w = clip(self.size[0] * resize / 100, MIN_W, MAX_W)
-			h = clip(self.size[1] * resize / 100, MIN_H, MAX_H)
+			w = clip(self.size[0] * resize // 100, MIN_W, MAX_W)
+			h = clip(self.size[1] * resize // 100, MIN_H, MAX_H)
 		else:
-			w = clip(self.size[0] * resize / 100, MAX_X / 2, MAX_X)
-			h = clip(self.size[1] * resize / 100, MAX_Y / 2, MAX_Y)
+			w = clip(self.size[0] * resize // 100, MAX_X // 2, MAX_X)
+			h = clip(self.size[1] * resize // 100, MAX_Y // 2, MAX_Y)
 
 		# calculate offset from center
-		mx = (oldsize[0] - w) / 2
-		my = (oldsize[1] - h) / 2
+		mx = (oldsize[0] - w) // 2
+		my = (oldsize[1] - h) // 2
 
 		self.size = (w, h)
 		# reclip, account for new center

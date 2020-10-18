@@ -3,7 +3,7 @@
 from __future__ import print_function
 from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
-from Components.config import config, ConfigYesNo
+from Components.config import config
 from Components.ActionMap import ActionMap
 from Components.Sources.StaticText import StaticText
 from Components.Harddisk import harddiskmanager, Harddisk
@@ -23,9 +23,11 @@ from Components.Pixmap import MultiPixmap
 from Components.Network import iNetwork
 from Components.SystemInfo import SystemInfo
 from Tools.Geolocation import geolocation
-import urllib2
-
-config.misc.OVupdatecheck = ConfigYesNo(default=True)
+try:
+	import urllib2
+except:
+	import urllib
+import six
 
 class About(Screen):
 	def __init__(self, session):
@@ -202,9 +204,14 @@ class OpenVisionInformation(Screen):
 					ovurl = "https://raw.githubusercontent.com/OpenVisionE2/openvision-development-platform/develop/meta-openvision/conf/distro/revision.conf"
 				else:
 					ovurl = "https://raw.githubusercontent.com/OpenVisionE2/openvision-oe/develop/meta-openvision/conf/distro/revision.conf"
-				ovresponse = urllib2.urlopen(ovurl)
-				ovrevision = ovresponse.read()
-				ovrevisionupdate = int(filter(str.isdigit, ovrevision))
+				if six.PY2:
+					ovresponse = urllib2.urlopen(ovurl)
+					ovrevision = ovresponse.read()
+					ovrevisionupdate = int(filter(str.isdigit, ovrevision))
+				else:
+					ovresponse = urllib.request.urlopen(ovurl)
+					ovrevision = ovresponse.read().decode()
+					ovrevisionupdate = ovrevision.split('r')[1][:3]
 			except Exception as e:
 				ovrevisionupdate = _("Requires internet connection")
 		else:
@@ -437,40 +444,46 @@ class Geolocation(Screen):
 
 		try:
 			continent = geolocation.get("continent", None)
-			if isinstance(continent, unicode):
-				continent = continent.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(continent, unicode):
+					continent = continent.encode(encoding="UTF-8", errors="ignore")
 			if continent is not None:
 				GeolocationText +=  _("Continent: ") + continent + "\n"
 
 			country = geolocation.get("country", None)
-			if isinstance(country, unicode):
-				country = country.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(country, unicode):
+					country = country.encode(encoding="UTF-8", errors="ignore")
 			if country is not None:
 				GeolocationText +=  _("Country: ") + country + "\n"
 
 			state = geolocation.get("regionName", None)
-			if isinstance(state, unicode):
-				state = state.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(state, unicode):
+					state = state.encode(encoding="UTF-8", errors="ignore")
 			if state is not None:
 				GeolocationText +=  _("State: ") + state + "\n"
 
 			city = geolocation.get("city", None)
-			if isinstance(city, unicode):
-				city = city.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(city, unicode):
+					city = city.encode(encoding="UTF-8", errors="ignore")
 			if city is not None:
 				GeolocationText +=  _("City: ") + city + "\n"
 
 			GeolocationText += "\n"
 
 			timezone = geolocation.get("timezone", None)
-			if isinstance(timezone, unicode):
-				timezone = timezone.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(timezone, unicode):
+					timezone = timezone.encode(encoding="UTF-8", errors="ignore")
 			if timezone is not None:
 				GeolocationText +=  _("Timezone: ") + timezone + "\n"
 
 			currency = geolocation.get("currency", None)
-			if isinstance(currency, unicode):
-				currency = currency.encode(encoding="UTF-8", errors="ignore")
+			if six.PY2:
+				if isinstance(currency, unicode):
+					currency = currency.encode(encoding="UTF-8", errors="ignore")
 			if currency is not None:
 				GeolocationText +=  _("Currency: ") + currency + "\n"
 
@@ -628,7 +641,10 @@ class Devices(Screen):
 		self.Console.ePopen("df -mh | grep -v '^Filesystem'", self.Stage1Complete)
 
 	def Stage1Complete(self, result, retval, extra_args=None):
-		result = result.replace('\n                        ', ' ').split('\n')
+		if six.PY2:
+			result = result.replace('\n                        ', ' ').split('\n')
+		else:
+			result = result.decode().replace('\n                        ', ' ').split('\n')
 		self.mountinfo = ""
 		for line in result:
 			self.parts = line.split()
@@ -761,10 +777,11 @@ class SystemNetworkInfo(Screen):
 
 		isp = geolocation.get("isp", None)
 		isporg = geolocation.get("org", None)
-		if isinstance(isp, unicode):
-			isp = isp.encode(encoding="UTF-8", errors="ignore")
-		if isinstance(isporg, unicode):
-			isporg = isporg.encode(encoding="UTF-8", errors="ignore")
+		if six.PY2:
+			if isinstance(isp, unicode):
+				isp = isp.encode(encoding="UTF-8", errors="ignore")
+			if isinstance(isporg, unicode):
+				isporg = isporg.encode(encoding="UTF-8", errors="ignore")
 		self.AboutText += "\n"
 		if isp is not None:
 			if isporg is not None:
@@ -794,7 +811,10 @@ class SystemNetworkInfo(Screen):
 		self.console.ePopen('ethtool %s' % self.iface, self.SpeedFinished)
 
 	def SpeedFinished(self, result, retval, extra_args):
-		result_tmp = result.split('\n')
+		if six.PY2:
+			result_tmp = result.split('\n')
+		else:
+			result_tmp = result.decode().split('\n')
 		for line in result_tmp:
 			if 'Speed:' in line:
 				speed = line.split(': ')[1][:-4]
@@ -833,10 +853,10 @@ class SystemNetworkInfo(Screen):
 							essid = _("No connection")
 						else:
 							accesspoint = status[self.iface]["accesspoint"]
-					if 'BSSID' in self:
+					if self.has_key("BSSID"):
 						self.AboutText += _('Accesspoint:') + '\t' + accesspoint + '\n'
 
-					if 'ESSID' in self:
+					if self.has_key("ESSID"):
 						if not status[self.iface]["essid"]:
 							essid = _("Unknown")
 						else:
@@ -846,14 +866,14 @@ class SystemNetworkInfo(Screen):
 								essid = status[self.iface]["essid"]
 						self.AboutText += _('SSID:') + '\t' + essid + '\n'
 
-					if 'quality' in self:
+					if self.has_key("quality"):
 						if not status[self.iface]["quality"]:
 							quality = _("Unknown")
 						else:
 							quality = status[self.iface]["quality"]
 						self.AboutText += _('Link quality:') + '\t' + quality + '\n'
 
-					if 'bitrate' in self:
+					if self.has_key("bitrate"):
 						if not status[self.iface]["bitrate"]:
 							bitrate = _("Unknown")
 						else:
@@ -863,14 +883,14 @@ class SystemNetworkInfo(Screen):
 								bitrate = str(status[self.iface]["bitrate"]) + " Mb/s"
 						self.AboutText += _('Bitrate:') + '\t' + bitrate + '\n'
 
-					if 'signal' in self:
+					if self.has_key("signal"):
 						if not status[self.iface]["signal"]:
 							signal = _("Unknown")
 						else:
 							signal = status[self.iface]["signal"]
 						self.AboutText += _('Signal strength:') + '\t' + signal + '\n'
 
-					if 'enc' in self:
+					if self.has_key("enc"):
 						if not status[self.iface]["encryption"]:
 							encryption = _("Unknown")
 						else:
@@ -914,6 +934,8 @@ class SystemNetworkInfo(Screen):
 		self["devicepic"].show()
 
 	def dataAvail(self, data):
+		if six.PY3:
+			data = data.decode()
 		self.LinkState = None
 		for line in data.splitlines():
 			line = line.strip()
@@ -1101,9 +1123,15 @@ class CommitInfo(Screen):
 			try:
 				# For python 2.7.11 we need to bypass the certificate check
 				from ssl import _create_unverified_context
-				log = loads(urllib2.urlopen(url, timeout=5, context=_create_unverified_context()).read())
+				if six.PY2:
+					log = loads(urllib2.urlopen(url, timeout=5, context=_create_unverified_context()).read())
+				else:
+					log = loads(urllib.request.urlopen(url, timeout=5, context=_create_unverified_context()).read())
 			except:
-				log = loads(urllib2.urlopen(url, timeout=5).read())
+				if six.PY2:
+					log = loads(urllib2.urlopen(url, timeout=5).read())
+				else:
+					log = loads(urllib.request.urlopen(url, timeout=5).read())
 			for c in log:
 				creator = c['commit']['author']['name']
 				title = c['commit']['message']
