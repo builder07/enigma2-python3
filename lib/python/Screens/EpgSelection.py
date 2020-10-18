@@ -30,6 +30,12 @@ from Components.Button import Button
 from Tools.Directories import resolveFilename, SCOPE_CURRENT_SKIN, fileExists, SCOPE_PLUGINS
 from Screens.MessageBox import MessageBox
 from Components.Console import Console
+import six
+
+if six.PY2:
+	pycode = func_code
+else:
+	pycode = __code__
 
 mepg_config_initialized = False
 
@@ -233,7 +239,7 @@ class EPGSelection(Screen):
 		event = self["list"].getCurrent()[0]
 		if event:
 			menu = [(p.name, boundFunction(self.runPlugin, p)) for p in plugins.getPlugins(where = PluginDescriptor.WHERE_EVENTINFO) \
-				if 'selectedevent' in p.__call__.func_code.co_varnames]
+				if 'selectedevent' in p.__call__.pycode.co_varnames]
 			if menu:
 				text += ": %s" % event.getEventName()
 		if self.type == EPG_TYPE_MULTI:

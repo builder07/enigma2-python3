@@ -17,8 +17,13 @@ from xml.etree import ElementTree
 from operator import itemgetter
 from Components.SystemInfo import SystemInfo
 import os, time
-import urllib2
+try:
+	import urllib2
+except:
+	import urllib
+	from urllib.request import HTTPHandler, HTTPDigestAuthHandler
 import skin
+import six
 
 ###global
 f = 1
@@ -171,23 +176,43 @@ class OscamInfo:
 		if part is not None and reader is not None:
 			self.url = "%s://%s:%s/%s.html?part=%s&label=%s" % ( self.proto, self.ip, self.port, self.api, part, reader )
 
-		opener = urllib2.build_opener( urllib2.HTTPHandler )
-		if not self.username == "":
-			pwman = urllib2.HTTPPasswordMgrWithDefaultRealm()
-			pwman.add_password( None, self.url, self.username, self.password )
-			handlers = urllib2.HTTPDigestAuthHandler( pwman )
-			opener = urllib2.build_opener( urllib2.HTTPHandler, handlers )
-			urllib2.install_opener( opener )
-		request = urllib2.Request( self.url )
-		err = False
-		try:
-			data = urllib2.urlopen( request ).read()
-			# print(data)
-		except urllib2.URLError as e:
-			if hasattr(e, "reason"):
-				err = str(e.reason)
-			elif hasattr(e, "code"):
-				err = str(e.code)
+		if six.PY2:
+			opener = urllib2.build_opener( urllib2.HTTPHandler )
+			if not self.username == "":
+				pwman = urllib2.HTTPPasswordMgrWithDefaultRealm()
+				pwman.add_password( None, self.url, self.username, self.password )
+				handlers = urllib2.HTTPDigestAuthHandler( pwman )
+				opener = urllib2.build_opener( urllib2.HTTPHandler, handlers )
+				urllib2.install_opener( opener )
+			request = urllib2.Request( self.url )
+			err = False
+			try:
+				data = urllib2.urlopen( request ).read()
+				# print(data)
+			except urllib2.URLError as e:
+				if hasattr(e, "reason"):
+					err = str(e.reason)
+				elif hasattr(e, "code"):
+					err = str(e.code)
+		else:
+			opener = urllib.request.build_opener( HTTPHandler )
+			if not self.username == "":
+				pwman = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+				pwman.add_password( None, self.url, self.username, self.password )
+				handlers = urllib.request.HTTPDigestAuthHandler( pwman )
+				opener = urllib.request.build_opener( urllib.request.HTTPHandler, handlers )
+				urllib.request.install_opener( opener )
+			request = urllib.request.Request( self.url )
+			err = False
+			try:
+				data = urllib.request.urlopen( request ).read()
+				# print(data)
+			except urllib.error.URLError as e:
+				if hasattr(e, "reason"):
+					err = str(e.reason)
+				elif hasattr(e, "code"):
+					err = str(e.code)
+
 		if err is not False:
 			print("[OScamInfo] Open WebIF error: %s" % err)
 			return False, err
@@ -257,7 +282,11 @@ class OscamInfo:
 							tmp[cl.attrib["type"]] = []
 							tmp[cl.attrib["type"]].append( (name, proto, "%s:%s" % (caid, srvid), srvname_short, ecmtime, ip, connstatus) )
 			else:
-				if "<![CDATA" not in result[1]:
+				if six.PY2:
+					cdata = '"<![CDATA"'
+				else:
+					cdata = 'b"<![CDATA"'
+				if cdata not in result[1]:
 					tmp = result[1].replace("<log>", "<log><![CDATA[").replace("</log>", "]]></log>")
 				else:
 					tmp = result[1]

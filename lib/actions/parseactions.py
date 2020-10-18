@@ -4,16 +4,24 @@ from __future__ import print_function
 # takes a header file, outputs action ids
 
 import tokenize, sys
+import six
+
+if six.PY2:
+	gnext = g.next()
+	tokensnext = tokens.next()
+else:
+	gnext = next(g)
+	tokensnext = next(tokens)
 
 def filter(g):
 	while 1:
-		t = g.next()
+		t = gnext
 		if t[1] == "/*":
-			while g.next()[1] != "*/":
+			while gnext[1] != "*/":
 				pass
 			continue
 		if t[1] == "//":
-			while g.next()[1] != "\n":
+			while gnext[1] != "\n":
 				pass
 			continue
 
@@ -34,12 +42,12 @@ def do_file(f, mode):
 
 	while 1:
 		try:
-			t = tokens.next()
+			t = tokensnext
 		except:
 			break
 
 		if t == "class":
-			classname = tokens.next()
+			classname = tokensnext
 			classstate = state
 
 		if t == "{":
@@ -49,15 +57,15 @@ def do_file(f, mode):
 			state -= 1
 
 		if t == "enum" and state == classstate + 1:
-			actionname = tokens.next()
+			actionname = tokensnext
 
 			if actionname == "{":
-				while tokens.next() != "}":
+				while tokensnext != "}":
 					pass
 				continue
 
 			if actionname[-7:] == "Actions":
-				if tokens.next() != "{":
+				if tokensnext != "{":
 					try:
 						print(classname)
 					except:
@@ -74,11 +82,11 @@ def do_file(f, mode):
 
 				while 1:
 
-					t = tokens.next()
+					t = tokensnext
 
 					if t == "=":
-						tokens.next()
-						t = tokens.next()
+						tokensnext
+						t = tokensnext
 
 					if t == "}":
 						break
@@ -86,7 +94,7 @@ def do_file(f, mode):
 					if counter:
 						if t != ",":
 							raise Exception("no comma")
-						t = tokens.next()
+						t = tokensnext
 
 					if firsthit:
 
