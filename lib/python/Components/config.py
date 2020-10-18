@@ -12,6 +12,11 @@ from time import localtime, strftime
 from Components.SystemInfo import SystemInfo
 import six
 
+if six.PY2:
+	pyunichr = unichr
+else:
+	pyunichr = chr
+
 # ConfigElement, the base class of all ConfigElements.
 
 # it stores:
@@ -1240,7 +1245,7 @@ class ConfigText(ConfigElement, NumericalTextInput):
 			self.overwrite = not self.overwrite
 		elif key == KEY_ASCII:
 			self.timeout()
-			newChar = unichr(getPrevAsciiCode())
+			newChar = pyunichr(getPrevAsciiCode())
 			if not self.useableChars or newChar in self.useableChars:
 				if self.allmarked:
 					self.deleteAllChars()
@@ -1436,7 +1441,7 @@ class ConfigNumber(ConfigText):
 					return
 			else:
 				ascii = getKeyNumber(key) + 48
-			newChar = unichr(ascii)
+			newChar = pyunichr(ascii)
 			if self.allmarked:
 				self.deleteAllChars()
 				self.allmarked = False

@@ -27,6 +27,8 @@
 #include <lib/base/nconfig.h>
 #include <dvbsi++/descriptor_tag.h>
 
+#include <Python.h>
+
 /* Interval between "garbage collect" cycles */
 #define CLEAN_INTERVAL 60000    //  1 min
 /* Restart EPG data capture */
@@ -3742,8 +3744,12 @@ PyObject *eEPGCache::search(ePyObject arg)
 			ePyObject obj = PyTuple_GET_ITEM(arg,0);
 			if (PyString_Check(obj))
 			{
+#if PY_MAJOR_VERSION < 3
 				argcount = PyString_Size(obj);
 				argstring = PyString_AS_STRING(obj);
+#else
+				argstring = PyUnicode_AsUTF8AndSize(obj, &argcount);
+#endif
 				for (int i=0; i < argcount; ++i)
 					switch(argstring[i])
 					{
