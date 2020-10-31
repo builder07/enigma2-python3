@@ -86,8 +86,8 @@ class About(Screen):
 		AboutText += _("Enigma2 (re)starts: %d\n") % config.misc.startCounter.value
 		AboutText += _("Enigma2 debug level: %d\n") % eGetEnigmaDebugLvl()
 
-		if fileExists("/etc/openvision/mediaservice"):
-			mediaservice = open("/etc/openvision/mediaservice", "r").read().strip()
+		if fileExists("/etc/openfix/mediaservice"):
+			mediaservice = open("/etc/openfix/mediaservice", "r").read().strip()
 			AboutText += _("Media service: ") + mediaservice.replace("enigma2-plugin-systemplugins-","") + "\n"
 
 		AboutText += "\n"
@@ -185,146 +185,146 @@ class About(Screen):
 	def showTroubleshoot(self):
 		self.session.open(Troubleshoot)
 
-class OpenVisionInformation(Screen):
+class OpenFIXInformation(Screen):
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		self.setTitle(_("Open Vision information"))
+		self.setTitle(_("OpenFIX information"))
 
-		OpenVisionInformationText = _("Open Vision information") + "\n"
+		OpenFIXInformationText = _("OpenFIX information") + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
-		if config.misc.OVupdatecheck.value is True:
+		if config.misc.OFupdatecheck.value is True:
 			try:
-				if boxbranding.getVisionVersion().startswith("10"):
-					ovurl = "https://raw.githubusercontent.com/OpenVisionE2/openvision-development-platform/python3/meta-openvision/conf/distro/revision.conf"
+				if boxbranding.getOpenFIXVersion().startswith("10"):
+					ofurl = "https://revision.conf"
 				else:
-					ovurl = "https://raw.githubusercontent.com/OpenVisionE2/openvision-oe/develop/meta-openvision/conf/distro/revision.conf"
-				ovresponse = urllib.request.urlopen(ovurl)
-				ovrevision = ovresponse.read().decode()
-				ovrevisionupdate = ovrevision.split('r')[1][:3]
+					ofurl = "https://revision.conf"
+				ofresponse = urllib.request.urlopen(ofurl)
+				ofrevision = ofresponse.read().decode()
+				ofrevisionupdate = ofrevision.split('r')[1][:3]
 			except Exception as e:
-				ovrevisionupdate = _("Requires internet connection")
+				ofrevisionupdate = _("Requires internet connection")
 		else:
-			ovrevisionupdate = _("Disabled in configuration")
+			ofrevisionupdate = _("Disabled in configuration")
 
-		if fileExists("/etc/openvision/visionversion"):
-			visionversion = open("/etc/openvision/visionversion", "r").read().strip()
-			OpenVisionInformationText += _("Open Vision version: ") + visionversion + "\n"
+		if fileExists("/etc/openfix/openfixversion"):
+			openfixversion = open("/etc/openfix/openfixversion", "r").read().strip()
+			OpenFIXInformationText += _("OpenFIX version: ") + openfixversion + "\n"
 		else:
-			OpenVisionInformationText += _("Open Vision version: ") + boxbranding.getVisionVersion() + "\n"
+			OpenFIXInformationText += _("OpenFIX version: ") + boxbranding.getOpenFIXVersion() + "\n"
 
-		if fileExists("/etc/openvision/visionrevision"):
-			visionrevision = open("/etc/openvision/visionrevision", "r").read().strip()
-			OpenVisionInformationText += _("Open Vision revision: ") + visionrevision + " " + _("(Latest revision on github: ") + str(ovrevisionupdate) + ")" + "\n"
+		if fileExists("/etc/openfix/openfixrevision"):
+			openfixrevision = open("/etc/openfix/openfixrevision", "r").read().strip()
+			OpenFIXInformationText += _("OpenFIX revision: ") + openfixrevision + " " + _("(Latest revision on github: ") + str(ofrevisionupdate) + ")" + "\n"
 		else:
-			OpenVisionInformationText += _("Open Vision revision: ") + boxbranding.getVisionRevision() + " " + _("(Latest revision on github: ") + str(ovrevisionupdate) + ")" + "\n"
+			OpenFIXInformationText += _("OpenFIX revision: ") + boxbranding.getOpenFIXRevision() + " " + _("(Latest revision on github: ") + str(ofrevisionupdate) + ")" + "\n"
 
-		if fileExists("/etc/openvision/visionlanguage"):
-			visionlanguage = open("/etc/openvision/visionlanguage", "r").read().strip()
-			OpenVisionInformationText += _("Open Vision language: ") + visionlanguage + "\n"
+		if fileExists("/etc/openfix/openfixlanguage"):
+			visionlanguage = open("/etc/openfix/openfixlanguage", "r").read().strip()
+			OpenFIXInformationText += _("OpenFIX language: ") + openfixlanguage + "\n"
 
-		OpenVisionInformationText += _("Open Vision module: ") + about.getVisionModule() + "\n"
-		OpenVisionInformationText += _("Flash type: ") + about.getFlashType() + "\n"
+		OpenFIXInformationText += _("OpenFIX module: ") + about.getOpenFIXModule() + "\n"
+		OpenFIXInformationText += _("Flash type: ") + about.getFlashType() + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
 		boxrctype = getBoxRCType()
 		if boxrctype is not None and boxrctype != "unknown":
-			OpenVisionInformationText += _("Factory RC type: ") + boxrctype + "\n"
+			OpenFIXnInformationText += _("Factory RC type: ") + boxrctype + "\n"
 		if boxrctype is not None and boxrctype == "unknown":
 			if fileExists("/usr/bin/remotecfg"):
-				OpenVisionInformationText += _("RC type: ") + _("Amlogic remote") + "\n"
+				OpenFIXInformationText += _("RC type: ") + _("Amlogic remote") + "\n"
 			elif fileExists("/usr/sbin/lircd"):
-				OpenVisionInformationText += _("RC type: ") + _("LIRC remote") + "\n"
+				OpenFIXInformationText += _("RC type: ") + _("LIRC remote") + "\n"
 
-		OpenVisionInformationText += _("Open Vision RC type: ") + boxbranding.getRCType() + "\n"
-		OpenVisionInformationText += _("Open Vision RC name: ") + boxbranding.getRCName() + "\n"
-		OpenVisionInformationText += _("Open Vision RC ID number: ") + boxbranding.getRCIDNum() + "\n"
+		OpenFIXInformationText += _("OpenFIX RC type: ") + boxbranding.getRCType() + "\n"
+		OpenFIXInformationText += _("OpenFIX RC name: ") + boxbranding.getRCName() + "\n"
+		OpenFIXInformationText += _("OpenFIX RC ID number: ") + boxbranding.getRCIDNum() + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
 		if SystemInfo["HiSilicon"]:
-			OpenVisionInformationText += _("HiSilicon dedicated information") + "\n"
+			OpenFIXInformationText += _("HiSilicon dedicated information") + "\n"
 
 			grab = os.popen("opkg list-installed | grep -- -grab | cut -f4 -d'-'").read().strip()
 			if grab != "" and grab != "r0":
-				OpenVisionInformationText += _("Grab: ") + grab + "\n"
+				OpenFIXInformationText += _("Grab: ") + grab + "\n"
 
 			hihalt = os.popen("opkg list-installed | grep -- -hihalt | cut -f4 -d'-'").read().strip()
 			if hihalt != "":
-				OpenVisionInformationText += _("Halt: ") + hihalt + "\n"
+				OpenFIXInformationText += _("Halt: ") + hihalt + "\n"
 
 			libs = os.popen("opkg list-installed | grep -- -libs | cut -f4 -d'-'").read().strip()
 			if libs != "":
-				OpenVisionInformationText += _("Libs: ") + libs + "\n"
+				OpenFIXInformationText += _("Libs: ") + libs + "\n"
 
 			partitions = os.popen("opkg list-installed | grep -- -partitions | cut -f4 -d'-'").read().strip()
 			if partitions != "":
-				OpenVisionInformationText += _("Partitions: ") + partitions + "\n"
+				OpenFIXInformationText += _("Partitions: ") + partitions + "\n"
 
 			reader = os.popen("opkg list-installed | grep -- -reader | cut -f4 -d'-'").read().strip()
 			if reader != "":
-				OpenVisionInformationText += _("Reader: ") + reader + "\n"
+				OpenFIXInformationText += _("Reader: ") + reader + "\n"
 
 			showiframe = os.popen("opkg list-installed | grep -- -showiframe | cut -f4 -d'-'").read().strip()
 			if showiframe != "":
-				OpenVisionInformationText += _("Showiframe: ") + showiframe + "\n"
+				OpenFIXInformationText += _("Showiframe: ") + showiframe + "\n"
 
-			OpenVisionInformationText += "\n"
+			OpenFIXInformationText += "\n"
 
-		OpenVisionInformationText += _("Image architecture: ") + boxbranding.getImageArch() + "\n"
+		OpenFIXnInformationText += _("Image architecture: ") + boxbranding.getImageArch() + "\n"
 		if boxbranding.getImageFolder() != "":
-			OpenVisionInformationText += _("Image folder: ") + boxbranding.getImageFolder() + "\n"
+			OpenFIXInformationText += _("Image folder: ") + boxbranding.getImageFolder() + "\n"
 		if boxbranding.getImageFileSystem() != "":
-			OpenVisionInformationText += _("Image file system: ") + boxbranding.getImageFileSystem() + "\n"
-		OpenVisionInformationText += _("Image: ") + boxbranding.getImageDistro() + "\n"
-		OpenVisionInformationText += _("Feed URL: ") + boxbranding.getFeedsUrl() + "\n"
+			OpenFIXInformationText += _("Image file system: ") + boxbranding.getImageFileSystem() + "\n"
+		OpenFIXInformationText += _("Image: ") + boxbranding.getImageDistro() + "\n"
+		OpenFIXInformationText += _("Feed URL: ") + boxbranding.getFeedsUrl() + "\n"
 
 		OpenVisionInformationText += _("Compiled by: ") + boxbranding.getDeveloperName() + "\n"
 		OpenVisionInformationText += _("Build date: ") + about.getBuildDateString() + "\n"
 
-		OpenVisionInformationText += _("OE: ") + boxbranding.getImageBuild() + "\n"
+		OpenFIXInformationText += _("OE: ") + boxbranding.getImageBuild() + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
 		if boxbranding.getImageFPU() != "":
-			OpenVisionInformationText += _("FPU: ") + boxbranding.getImageFPU() + "\n"
+			OpenFIXInformationText += _("FPU: ") + boxbranding.getImageFPU() + "\n"
 
 		if boxbranding.getImageArch() == "aarch64":
 			if boxbranding.getHaveMultiLib() == "True":
-				OpenVisionInformationText += _("MultiLib: ") + _("Yes") + "\n"
+				OpenFIXInformationText += _("MultiLib: ") + _("Yes") + "\n"
 			else:
-				OpenVisionInformationText += _("MultiLib: ") + _("No") + "\n"
+				OpenFIXInformationText += _("MultiLib: ") + _("No") + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
 		if boxbranding.getMachineMtdBoot() != "":
-			OpenVisionInformationText += _("MTD boot: ") + boxbranding.getMachineMtdBoot() + "\n"
+			OpenFIXInformationText += _("MTD boot: ") + boxbranding.getMachineMtdBoot() + "\n"
 		if boxbranding.getMachineMtdRoot() != "":
-			OpenVisionInformationText += _("MTD root: ") + boxbranding.getMachineMtdRoot() + "\n"
+			OpenFIXInformationText += _("MTD root: ") + boxbranding.getMachineMtdRoot() + "\n"
 		if boxbranding.getMachineMtdKernel() != "":
-			OpenVisionInformationText += _("MTD kernel: ") + boxbranding.getMachineMtdKernel() + "\n"
+			OpenFIXInformationText += _("MTD kernel: ") + boxbranding.getMachineMtdKernel() + "\n"
 
 		if boxbranding.getMachineRootFile() != "":
-			OpenVisionInformationText += _("Root file: ") + boxbranding.getMachineRootFile() + "\n"
+			OpenFIXInformationText += _("Root file: ") + boxbranding.getMachineRootFile() + "\n"
 		if boxbranding.getMachineKernelFile() != "":
-			OpenVisionInformationText += _("Kernel file: ") + boxbranding.getMachineKernelFile() + "\n"
+			OpenFIXInformationText += _("Kernel file: ") + boxbranding.getMachineKernelFile() + "\n"
 
 		if boxbranding.getMachineMKUBIFS() != "":
-			OpenVisionInformationText += _("MKUBIFS: ") + boxbranding.getMachineMKUBIFS() + "\n"
+			OpenFIXInformationText += _("MKUBIFS: ") + boxbranding.getMachineMKUBIFS() + "\n"
 		if boxbranding.getMachineUBINIZE() != "":
-			OpenVisionInformationText += _("UBINIZE: ") + boxbranding.getMachineUBINIZE() + "\n"
+			OpenFIXInformationText += _("UBINIZE: ") + boxbranding.getMachineUBINIZE() + "\n"
 
-		OpenVisionInformationText += "\n"
+		OpenFIXInformationText += "\n"
 
 		if fileExists("/proc/device-tree/amlogic-dt-id"):
 			devicetid = open("/proc/device-tree/amlogic-dt-id", "r").read().strip()
-			OpenVisionInformationText += _("Device id: ") + devicetid + "\n"
+			OpenFIXInformationText += _("Device id: ") + devicetid + "\n"
 
 		if fileExists("/proc/device-tree/le-dt-id"):
 			giventid = open("/proc/device-tree/le-dt-id", "r").read().strip()
-			OpenVisionInformationText += _("Given device id: ") + giventid + "\n"
+			OpenFIXInformationText += _("Given device id: ") + giventid + "\n"
 
 		self["AboutScrollLabel"] = ScrollLabel(OpenVisionInformationText)
 		self["key_red"] = Button(_("Close"))
@@ -1051,21 +1051,21 @@ class CommitInfo(Screen):
 		except:
 			branch = ""
 
-		if boxbranding.getVisionVersion().startswith("10"):
-			oegiturl = "https://api.github.com/repos/OpenVisionE2/openvision-development-platform/commits"
+		if boxbranding.getOpenFIXVersion().startswith("10"):
+			oegiturl = "https://commits"
 		else:
-			oegiturl = "https://api.github.com/repos/OpenVisionE2/openvision-oe/commits"
+			oegiturl = "https://commits"
 
 		self.project = 0
 		self.projects = [
-			("https://api.github.com/repos/OpenVisionE2/enigma2-openvision/commits" + branch, "Enigma2 - Vision"),
-			(oegiturl, "OE - Vision"),
-			("https://api.github.com/repos/OpenVisionE2/enigma2-plugins/commits", "Enigma2 plugins"),
-			("https://api.github.com/repos/OpenVisionE2/alliance-plugins/commits", "Alliance plugins"),
-			("https://api.github.com/repos/OpenVisionE2/OpenWebif/commits", "Open WebIF"),
-			("https://api.github.com/repos/OpenVisionE2/openvision-core-plugin/commits", "Vision core plugin"),
-			("https://api.github.com/repos/OpenVisionE2/BackupSuite/commits", "Backup Suite plugin"),
-			("https://api.github.com/repos/OpenVisionE2/OctEtFHD-skin/commits", "OctEtFHD skin")
+			("https://api.github.com/commits" + branch, "Enigma2 - OpenFIX"),
+			(oegiturl, "OE - OpenFIX"),
+			("https://commits", "Enigma2 plugins"),
+			("https://commits", "Alliance plugins"),
+			("https://commits", "Open WebIF"),
+			("https://commits", "OpenFIX core plugin"),
+			("https://commits", "Backup Suite plugin"),
+			("https://commits", "OctEtFHD skin")
 		]
 		self.cachedProjects = {}
 		self.Timer = eTimer()
