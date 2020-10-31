@@ -43,8 +43,8 @@ def getIfTransferredData(ifname):
 			rx_bytes, tx_bytes = (data[0], data[8])
 			return rx_bytes, tx_bytes
 
-def getVersionString():
-	return getImageVersionString()
+def getOpenFIXString():
+	return getImageOpenFIXnString()
 
 def getImageVersionString():
 	try:
@@ -73,7 +73,7 @@ def getBuildDateString():
 def getUpdateDateString():
 	try:
 		from glob import glob
-		build = [x.split("-")[-2:-1][0][-8:] for x in open(glob("/var/lib/opkg/info/openvision-bootlogo.control")[0], "r") if x.startswith("Version:")][0]
+		build = [x.split("-")[-2:-1][0][-8:] for x in open(glob("/var/lib/opkg/info/oe-alliance-branding.control")[0], "r") if x.startswith("Version:")][0]
 		if build.isdigit():
 			return  "%s-%s-%s" % (build[:4], build[4:6], build[6:])
 	except:
@@ -122,8 +122,8 @@ def getCPUBenchmark():
 			cmdbenchmark = "dhry > /tmp/dhry.txt"
 			Console().ePopen(cmdbenchmark)
 		if fileExists("/tmp/dhry.txt"):
-			cpubench = os.popen("cat /tmp/dhry.txt | grep 'Open Vision DMIPS' | sed 's|[^0-9]*||'").read().strip()
-			benchmarkstatus = os.popen("cat /tmp/dhry.txt | grep 'Open Vision CPU status' | cut -f2 -d':'").read().strip()
+			cpubench = os.popen("cat /tmp/dhry.txt | grep 'OpenFIX DMIPS' | sed 's|[^0-9]*||'").read().strip()
+			benchmarkstatus = os.popen("cat /tmp/dhry.txt | grep 'OpenFIX CPU status' | cut -f2 -d':'").read().strip()
 
 		if cpucount > 1:
 			cpumaxbench = int(cpubench)*int(cpucount)
@@ -227,7 +227,7 @@ def getFlashType():
 	elif SystemInfo["MiddleFlash"]:
 		return _("Middle - Lite image")
 	else:
-		return _("Enough - Vision image")
+		return _("Enough - OpenFIX image")
 
 def getDVBAPI():
 	if SystemInfo["OLDE2API"]:
@@ -235,8 +235,8 @@ def getDVBAPI():
 	else:
 		return _("New")
 
-def getVisionModule():
-	if SystemInfo["OpenVisionModule"]:
+def getOpenFIXModule():
+	if SystemInfo["OpenFIXModule"]:
 		return _("Loaded")
 	else:
 		return _("Unknown, multiboot situation!")
