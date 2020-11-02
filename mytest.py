@@ -11,7 +11,7 @@ profile("PYTHON_START")
 # it will break output redirection for crash logs.
 from Tools import RedirectOutput
 from Tools.Directories import resolveFilename, fileExists
-from boxbranding import getVisionVersion, getVisionRevision, getHaveMultiLib, getMachineBuild, getSoCFamily
+from boxbranding import getOpenFIXVersion, getOpenFIXRevision, getHaveMultiLib, getMachineBuild, getSoCFamily
 from enigma import getBoxType, getBoxBrand
 
 model = getBoxType()
@@ -19,8 +19,8 @@ brand = getBoxBrand()
 platform = getMachineBuild()
 socfamily = getSoCFamily()
 
-print("[mytest] Open Vision version = %s" % getVisionVersion())
-print("[mytest] Open Vision revision = %s" % getVisionRevision())
+print("[mytest] OpenFIX version = %s" % getOpenFIXVersion())
+print("[mytest] OpenFIX revision = %s" % getOpenFIXRevision())
 print("[mytest] Brand/Meta = %s" % brand)
 print("[mytest] Model = %s" % model)
 print("[mytest] Platform = %s" % platform)
@@ -41,8 +41,8 @@ if getVisionVersion().startswith("10") and not fileExists ("/var/tmp/ntpv4.local
 	print("[mytest] All network interfaces loaded.")
 
 from Components.SystemInfo import SystemInfo
-if not SystemInfo["OpenVisionModule"]:
-	print("[mytest] Open Vision in multiboot! Now we have to remove what relies on our kernel module!")
+if not SystemInfo["OpenFIXModule"]:
+	print("[mytest] OpenFIX in multiboot! Now we have to remove what relies on our kernel module!")
 	from Components.Console import Console
 	Console = Console()
 	Console.ePopen('opkg remove enigma2-plugin-extensions-e2iplayer')
