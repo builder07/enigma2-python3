@@ -221,7 +221,7 @@ class OpenFIXInformation(Screen):
 			OpenFIXInformationText += _("OpenFIX revision: ") + boxbranding.getOpenFIXRevision() + " " + _("(Latest revision on github: ") + str(ofrevisionupdate) + ")" + "\n"
 
 		if fileExists("/etc/openfix/openfixlanguage"):
-			visionlanguage = open("/etc/openfix/openfixlanguage", "r").read().strip()
+			openfixlanguage = open("/etc/openfix/openfixlanguage", "r").read().strip()
 			OpenFIXInformationText += _("OpenFIX language: ") + openfixlanguage + "\n"
 
 		OpenFIXInformationText += _("OpenFIX module: ") + about.getOpenFIXModule() + "\n"
@@ -281,8 +281,8 @@ class OpenFIXInformation(Screen):
 		OpenFIXInformationText += _("Image: ") + boxbranding.getImageDistro() + "\n"
 		OpenFIXInformationText += _("Feed URL: ") + boxbranding.getFeedsUrl() + "\n"
 
-		OpenVisionInformationText += _("Compiled by: ") + boxbranding.getDeveloperName() + "\n"
-		OpenVisionInformationText += _("Build date: ") + about.getBuildDateString() + "\n"
+		OpenFIXInformationText += _("Compiled by: ") + boxbranding.getDeveloperName() + "\n"
+		OpenFIXInformationText += _("Build date: ") + about.getBuildDateString() + "\n"
 
 		OpenFIXInformationText += _("OE: ") + boxbranding.getImageBuild() + "\n"
 
@@ -326,7 +326,7 @@ class OpenFIXInformation(Screen):
 			giventid = open("/proc/device-tree/le-dt-id", "r").read().strip()
 			OpenFIXInformationText += _("Given device id: ") + giventid + "\n"
 
-		self["AboutScrollLabel"] = ScrollLabel(OpenVisionInformationText)
+		self["AboutScrollLabel"] = ScrollLabel(OpenFIXInformationText)
 		self["key_red"] = Button(_("Close"))
 
 		self["actions"] = ActionMap(["ColorActions", "SetupActions", "DirectionActions"],
@@ -934,9 +934,9 @@ class SystemMemoryInfo(Screen):
 		title = screentitle
 		Screen.setTitle(self, title)
 		self.skinName = ["SystemMemoryInfo", "About"]
-		self["lab1"] = StaticText(_("Open Vision enigma2 image"))
-		self["lab2"] = StaticText(_("by Open Vision developers"))
-		self["lab3"] = StaticText(_("Support at %s") % "https://openvision.tech")
+		self["lab1"] = StaticText(_("OpenFIX enigma2 image"))
+		self["lab2"] = StaticText(_("by OpenFIX developers"))
+		self["lab3"] = StaticText(_("Support at %s") % "https://gisclub.tv")
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["key_red"] = Button(_("Close"))
